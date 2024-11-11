@@ -1,14 +1,23 @@
 CREATE DATABASE Techify;
 GO
 USE Techify;
+
+CREATE TABLE account (
+    id NVARCHAR(20) PRIMARY KEY,
+    email NVARCHAR(50) UNIQUE NOT NULL,
+    password_hash NVARCHAR(255),
+    role NVARCHAR(20) NOT NULL,
+    refresh_token NVARCHAR(255),
+    last_login DATETIME2,
+    google_id NVARCHAR(50),
+    facebook_id NVARCHAR(50),
+    status BIT NOT NULL DEFAULT 1
+);
+
 CREATE TABLE customer
 (
     id            NVARCHAR(20) PRIMARY KEY,
     full_name     NVARCHAR(50) NOT NULL,
-    email         NVARCHAR(50),
-    password_hash NVARCHAR(255),
-    google_id     NVARCHAR(50),
-    facebook_id   NVARCHAR(50),
     phone         NVARCHAR(20),
     alt_phone     NVARCHAR(20),
     province      NVARCHAR(50),
@@ -16,7 +25,7 @@ CREATE TABLE customer
     ward          NVARCHAR(50),
     address       NVARCHAR(255),
     alt_address   NVARCHAR(255),
-    status        BIT          NOT NULL DEFAULT 1
+	FOREIGN KEY (id) REFERENCES account(id)
 );
 GO
 CREATE TABLE staff
@@ -26,12 +35,9 @@ CREATE TABLE staff
     dob           DATE,
     gender        NVARCHAR(10),
     citizen_id    NVARCHAR(20),
-    email         NVARCHAR(50),
-    password_hash NVARCHAR(255),
     phone         NVARCHAR(20),
     address       NVARCHAR(255),
-    role          bit          NOT NULL DEFAULT 0,
-    status        BIT          NOT NULL DEFAULT 1
+    FOREIGN KEY (id) REFERENCES account(id)
 );
 GO
 CREATE TABLE parent_category
