@@ -65,7 +65,6 @@ public class Product {
     @Column(name = "tax", nullable = false)
     private Double tax;
 
-    @Size(max = 255)
     @Nationalized
     @Column(name = "description")
     private String description;
