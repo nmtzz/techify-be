@@ -57,21 +57,15 @@ public class JwtService {
         return extractExpiration(token).before(new Date());
     }
 
-    public String generateToken(String id, String email, String role, boolean status) {
+    public String generateToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", id);
-        claims.put("email", email);
         claims.put("role", role);
-        claims.put("status", status);
         return createToken(claims, email, jwtExpiration);
     }
 
-    public String generateRefreshToken(String id, String email, String role, boolean status) {
+    public String generateRefreshToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("id", id);
-        claims.put("email", email);
         claims.put("role", role);
-        claims.put("status", status);
         return createToken(claims, email, refreshExpiration);
     }
 

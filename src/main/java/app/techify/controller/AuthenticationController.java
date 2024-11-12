@@ -35,8 +35,8 @@ public class AuthenticationController {
 
             Account account = accountRepository.findByEmail(userDetails.getUsername()).orElseThrow();
 
-            String jwt = jwtService.generateToken(account.getId(), account.getEmail(), account.getRole(), account.getStatus());
-            String refreshToken = jwtService.generateRefreshToken(account.getId(), account.getEmail(), account.getRole(), account.getStatus());
+            String jwt = jwtService.generateToken(account.getEmail(), account.getRole());
+            String refreshToken = jwtService.generateRefreshToken(account.getEmail(), account.getRole());
 
             account.setRefreshToken(refreshToken);
             accountRepository.save(account);
@@ -55,7 +55,7 @@ public class AuthenticationController {
         Account account = accountRepository.findByEmail(email).orElseThrow();
 
         if (refreshToken.equals(account.getRefreshToken()) && !jwtService.isTokenExpired(refreshToken)) {
-            String newToken = jwtService.generateToken(account.getId(), account.getEmail(), account.getRole(), account.getStatus());
+            String newToken = jwtService.generateToken(account.getEmail(), account.getRole());
             return ResponseEntity.ok(new AuthResponse(newToken, refreshToken));
         }
 

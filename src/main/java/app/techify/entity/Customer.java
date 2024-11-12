@@ -18,16 +18,14 @@ import java.util.Set;
 @Table(name = "customer")
 public class Customer {
 
-
     @Id
     @Size(max = 20)
     @Nationalized
     @Column(name = "id", nullable = false, length = 20)
     private String id;
 
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
     private Account account;
 
     @Size(max = 50)

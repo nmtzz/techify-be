@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
-import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @AllArgsConstructor
@@ -18,10 +19,9 @@ import java.time.Instant;
 @Table(name = "account")
 public class Account {
     @Id
-    @Size(max = 20)
-    @Nationalized
-    @Column(name = "id", nullable = false, length = 20)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Integer id;
 
     @Size(max = 50)
     @NotNull
@@ -34,19 +34,16 @@ public class Account {
     @Column(name = "password_hash")
     private String passwordHash;
 
-    @Size(max = 20)
+    @Size(max = 40)
     @NotNull
     @Nationalized
-    @Column(name = "role", nullable = false, length = 20)
+    @Column(name = "role", nullable = false, length = 40)
     private String role;
 
     @Size(max = 255)
     @Nationalized
     @Column(name = "refresh_token")
     private String refreshToken;
-
-    @Column(name = "last_login")
-    private Instant lastLogin;
 
     @Size(max = 50)
     @Nationalized
@@ -61,11 +58,12 @@ public class Account {
     @NotNull
     @ColumnDefault("1")
     @Column(name = "status", nullable = false)
-    private Boolean status = true;
+    private Boolean status = false;
 
-    @OneToOne(mappedBy = "account")
-    private Customer customer;
+    @OneToMany(mappedBy = "account")
+    private Set<Customer> customers = new LinkedHashSet<>();
 
-    @OneToOne(mappedBy = "account")
-    private Staff staff;
+    @OneToMany(mappedBy = "account")
+    private Set<Staff> staff = new LinkedHashSet<>();
+
 }
