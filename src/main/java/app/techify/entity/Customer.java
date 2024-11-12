@@ -1,13 +1,9 @@
 package app.techify.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 @Builder
@@ -29,26 +25,6 @@ public class Customer {
     @Nationalized
     @Column(name = "full_name", nullable = false, length = 50)
     private String fullName;
-
-    @Size(max = 50)
-    @Nationalized
-    @Column(name = "email", length = 50)
-    private String email;
-
-    @Size(max = 255)
-    @Nationalized
-    @Column(name = "password_hash")
-    private String passwordHash;
-
-    @Size(max = 50)
-    @Nationalized
-    @Column(name = "google_id", length = 50)
-    private String googleId;
-
-    @Size(max = 50)
-    @Nationalized
-    @Column(name = "facebook_id", length = 50)
-    private String facebookId;
 
     @Size(max = 20)
     @Nationalized
@@ -85,9 +61,8 @@ public class Customer {
     @Column(name = "alt_address")
     private String altAddress;
 
-    @NotNull
-    @ColumnDefault("1")
-    @Column(name = "status", nullable = false)
-    private Boolean status = false;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
 }

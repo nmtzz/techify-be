@@ -52,7 +52,20 @@ public class ProductService {
     }
 
     public void updateProduct(String id, @Valid Product product) {
-        productRepository.updateProductById(id, product);
+        Product productToUpdate = productRepository.findById(id).get();
+        productToUpdate.setCategory(product.getCategory());
+        productToUpdate.setName(product.getName());
+        productToUpdate.setThumbnail(product.getThumbnail());
+        productToUpdate.setBrand(product.getBrand());
+        productToUpdate.setOrigin(product.getOrigin());
+        productToUpdate.setUnit(product.getUnit());
+        productToUpdate.setSerial(product.getSerial());
+        productToUpdate.setWarranty(product.getWarranty());
+        productToUpdate.setBuyPrice(product.getBuyPrice());
+        productToUpdate.setSellPrice(product.getSellPrice());
+        productToUpdate.setTax(product.getTax());
+        productToUpdate.setDescription(product.getDescription());
+        productRepository.save(productToUpdate);
     }
 
     public void deleteProduct(String id) {
