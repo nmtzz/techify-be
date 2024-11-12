@@ -2,13 +2,10 @@ package app.techify.controller;
 
 import app.techify.dto.CategoryDto;
 import app.techify.service.CategoryService;
-import app.techify.service.CloudinaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Map;
 
@@ -35,13 +32,5 @@ public class CategoryController {
     public ResponseEntity<String> deleteCategory(@PathVariable Integer id) {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok("Deleted");
-    }
-
-    private final CloudinaryService cloudinaryService;
-
-    @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image) {
-        Map result = this.cloudinaryService.upload(image);
-        return ResponseEntity.ok(result.get("url").toString());
     }
 }

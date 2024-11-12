@@ -55,11 +55,6 @@ public class Account {
     @Column(name = "facebook_id", length = 50)
     private String facebookId;
 
-    @NotNull
-    @ColumnDefault("1")
-    @Column(name = "status", nullable = false)
-    private Boolean status = false;
-
     @OneToMany(mappedBy = "account")
     private Set<Customer> customers = new LinkedHashSet<>();
 

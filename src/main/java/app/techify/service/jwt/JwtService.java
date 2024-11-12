@@ -75,24 +75,12 @@ public class JwtService {
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .signWith(SignatureAlgorithm.HS256, secret)
+                .signWith(getSignKey(),SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public Boolean validateToken(String token, UserDetails userDetails) {
         final String username = extractEmail(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
-    }
-
-    public String extractId(String token) {
-        return extractClaim(token, claims -> claims.get("id", String.class));
-    }
-
-    public String extractRole(String token) {
-        return extractClaim(token, claims -> claims.get("role", String.class));
-    }
-
-    public Boolean extractStatus(String token) {
-        return extractClaim(token, claims -> claims.get("status", Boolean.class));
     }
 }
