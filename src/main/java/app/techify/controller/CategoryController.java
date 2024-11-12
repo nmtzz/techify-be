@@ -36,12 +36,4 @@ public class CategoryController {
         categoryService.deleteCategory(id);
         return ResponseEntity.ok("Deleted");
     }
-
-    private final CloudinaryService cloudinaryService;
-
-    @PostMapping("/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("image") MultipartFile image) {
-        Map result = this.cloudinaryService.upload(image);
-        return ResponseEntity.ok(result.get("url").toString());
-    }
 }

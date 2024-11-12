@@ -1,9 +1,6 @@
 package app.techify.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -19,6 +16,7 @@ import org.hibernate.annotations.Nationalized;
 public class Color {
     @Id
     @Column(name = "id", columnDefinition = "tinyint not null")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Short id;
 
     @Size(max = 255)
