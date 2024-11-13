@@ -6,6 +6,9 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,11 +17,16 @@ import org.hibernate.annotations.Nationalized;
 @Entity
 @Table(name = "customer")
 public class Customer {
+
     @Id
     @Size(max = 20)
     @Nationalized
     @Column(name = "id", nullable = false, length = 20)
     private String id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Size(max = 50)
     @NotNull
@@ -61,8 +69,10 @@ public class Customer {
     @Column(name = "alt_address")
     private String altAddress;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @OneToMany(mappedBy = "customer")
+    private Set<Order> orders = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "customer")
+    private Set<Review> reviews = new LinkedHashSet<>();
 
 }

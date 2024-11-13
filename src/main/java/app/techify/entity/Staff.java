@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -16,11 +18,16 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "staff")
 public class Staff {
+
     @Id
     @Size(max = 20)
     @Nationalized
     @Column(name = "id", nullable = false, length = 20)
     private String id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "account_id")
+    private Account account;
 
     @Size(max = 50)
     @NotNull
@@ -41,7 +48,6 @@ public class Staff {
     @Column(name = "citizen_id", length = 20)
     private String citizenId;
 
-
     @Size(max = 20)
     @Nationalized
     @Column(name = "phone", length = 20)
@@ -52,9 +58,7 @@ public class Staff {
     @Column(name = "address")
     private String address;
 
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "account_id")
-    private Account account;
+    @OneToMany(mappedBy = "staff")
+    private Set<Order> orders = new LinkedHashSet<>();
 
 }
