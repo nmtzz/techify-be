@@ -5,6 +5,7 @@ import app.techify.dto.LoginRequest;
 import app.techify.dto.RefreshTokenRequest;
 import app.techify.entity.Account;
 import app.techify.repository.AccountRepository;
+import app.techify.service.AccountService;
 import app.techify.service.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,13 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final AccountRepository accountRepository;
+    private final AccountService accountService;
+
+    @PostMapping("/register")
+    public ResponseEntity<Void> register(@RequestBody Account account) {
+        accountService.createAccount(account);
+        return ResponseEntity.ok().build();
+    }
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
