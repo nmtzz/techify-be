@@ -15,6 +15,6 @@ public class ConfigExceptionHandler {
 
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     ResponseEntity<String> handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        return ResponseEntity.badRequest().body("Co loi xay ra, hay thu mot gia tri khac");
+        return ResponseEntity.badRequest().body("Có lỗi xảy ra, hãy thử lại");
     }
 }

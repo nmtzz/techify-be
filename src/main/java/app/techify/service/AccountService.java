@@ -12,13 +12,13 @@ import org.springframework.stereotype.Service;
 public class AccountService {
     private final AccountRepository accountRepository;
     private final PasswordEncoder passwordEncoder;
-    public void createAccount(Account account) {
+    public Account createAccount(Account account) {
         if (account.getPasswordHash() != null) {
             account.setPasswordHash(passwordEncoder.encode(account.getPasswordHash()));
         }
         if (account.getRole() == null) {
             account.setRole("CUSTOMER");
         }
-        accountRepository.save(account);
+        return accountRepository.save(account);
     }
 }

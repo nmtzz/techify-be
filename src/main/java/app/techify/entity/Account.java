@@ -1,10 +1,10 @@
 package app.techify.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Nationalized;
 
 @Builder
@@ -21,7 +21,7 @@ public class Account {
     private Integer id;
 
     @Size(max = 50)
-    @NotNull
+    @NotBlank(message = "Email is required")
     @Nationalized
     @Column(name = "email", nullable = false, length = 50)
     private String email;
@@ -32,9 +32,8 @@ public class Account {
     private String passwordHash;
 
     @Size(max = 40)
-    @NotNull
     @Nationalized
-    @Column(name = "role", nullable = false, length = 40)
+    @Column(name = "role", length = 40)
     private String role;
 
     @Size(max = 255)
