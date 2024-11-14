@@ -1,5 +1,6 @@
 package app.techify.controller;
 
+import app.techify.dto.GetProductDto;
 import app.techify.dto.ProductDto;
 import app.techify.entity.Product;
 import app.techify.service.ProductService;
@@ -8,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/product")
 @RequiredArgsConstructor
@@ -15,7 +18,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("")
+    @PostMapping("/create")
     public ResponseEntity<String> createProduct(@Valid @RequestBody ProductDto productDto) {
         productService.createProduct(productDto);
         return ResponseEntity.ok("Created");
@@ -40,5 +43,9 @@ public class ProductController {
             return ResponseEntity.badRequest().body("Khong the xoa san pham nay");
         }
     }
-
+    @GetMapping
+    public ResponseEntity<List<GetProductDto>> getAllProducts() {
+        List<GetProductDto> products = productService.getAllProductsWithDetails();
+        return ResponseEntity.ok(products);
+    }
 }

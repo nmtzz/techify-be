@@ -7,6 +7,8 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Builder
 @AllArgsConstructor
@@ -80,5 +82,15 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attribute_id")
     private Attribute attribute;
+
+
+    @OneToMany(mappedBy = "product")
+    private Set<OrderDetail> orderDetails = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<ProductPromotion> productPromotions = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "product")
+    private Set<Review> reviews = new LinkedHashSet<>();
 
 }
