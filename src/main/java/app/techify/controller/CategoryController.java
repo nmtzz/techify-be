@@ -1,16 +1,14 @@
 package app.techify.controller;
 
 import app.techify.dto.CategoryDto;
+import app.techify.entity.Category;
 import app.techify.service.CategoryService;
-import app.techify.service.CloudinaryService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/category")
@@ -19,8 +17,12 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    @GetMapping("")
+    public ResponseEntity<List<Category>> getCategories() {
+        return ResponseEntity.ok(categoryService.getCategories());
+    }
     @PostMapping("")
-    public ResponseEntity<String> createCategory(@Valid @RequestBody CategoryDto categoryDto) {
+    public ResponseEntity<String> createCategory(@Valid @ModelAttribute CategoryDto categoryDto) {
         categoryService.createCategory(categoryDto);
         return ResponseEntity.ok("Created");
     }

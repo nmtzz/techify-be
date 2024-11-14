@@ -4,8 +4,10 @@ import app.techify.dto.AuthResponse;
 import app.techify.dto.LoginRequest;
 import app.techify.dto.RefreshTokenRequest;
 import app.techify.entity.Account;
+import app.techify.entity.Customer;
 import app.techify.repository.AccountRepository;
 import app.techify.service.AccountService;
+import app.techify.service.CustomerService;
 import app.techify.service.jwt.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("api/auth")
 @RequiredArgsConstructor
 public class AuthenticationController {
 
@@ -24,19 +26,29 @@ public class AuthenticationController {
     private final JwtService jwtService;
     private final AccountRepository accountRepository;
     private final AccountService accountService;
+    private final CustomerService customerService;
 
     @PostMapping("/register")
-    public ResponseEntity<Void> register(@RequestBody Account account) {
-        accountService.createAccount(account);
+    public ResponseEntity<Void> register(@RequestParam String email, @RequestParam String passwordHash, @RequestParam String fullName) {
+        Account newAccount = Account.builder()
+                .email(email)
+                .passwordHash(passwordHash)
+                .build();
+        Account savedAccount = accountService.createAccount(newAccount);
+        Customer newCustomer = Customer.builder()
+                .account(savedAccount)
+                .fullName(fullName)
+                .build();
+        customerService.createCustomer(newCustomer);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> login(@ModelAttribute LoginRequest loginRequest) {
         System.out.println("Login attempt for email: " + loginRequest.getEmail());
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPassword()));
+                    new UsernamePasswordAuthenticationToken(loginRequest.getEmail(), loginRequest.getPasswordHash()));
 
             UserDetails userDetails = (UserDetails) authentication.getPrincipal();
             System.out.println("Authentication successful for user: " + userDetails.getUsername());
@@ -68,6 +80,14 @@ public class AuthenticationController {
         }
 
         return ResponseEntity.badRequest().body("Invalid refresh token");
+    }
+    @GetMapping("")
+    public ResponseEntity<?> getUser() {
+        try {
+            return ResponseEntity.ok(accountService.getUser());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Xác thực người dùng thất bại");
+        }
     }
 
     @GetMapping("/protected")

@@ -6,15 +6,10 @@ import app.techify.repository.AttributeRepository;
 import app.techify.repository.ColorRepository;
 import app.techify.repository.ImageRepository;
 import app.techify.repository.ProductRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +18,6 @@ public class ProductService {
     private final ColorRepository colorRepository;
     private final ImageRepository imageRepository;
     private final AttributeRepository attributeRepository;
-    private final CloudinaryService cloudinaryService;
-    private final ObjectMapper objectMapper;
 
     public void createProduct(ProductDto productDto) {
         Color color = colorRepository.save(Color.builder().colorJson(productDto.getColor()).build());

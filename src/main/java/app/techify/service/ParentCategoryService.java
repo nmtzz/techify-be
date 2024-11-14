@@ -3,10 +3,10 @@ package app.techify.service;
 import app.techify.dto.ParentCategoryDto;
 import app.techify.entity.ParentCategory;
 import app.techify.repository.ParentCategoryRepository;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +28,9 @@ public class ParentCategoryService {
 
     public void deleteParentCategory(Integer id) {
         parentCategoryRepository.deleteById(id);
+    }
+
+    public List<ParentCategory> getParentCategories() {
+        return parentCategoryRepository.findAll();
     }
 }
