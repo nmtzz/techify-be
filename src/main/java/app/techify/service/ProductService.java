@@ -25,7 +25,6 @@ public class ProductService {
     private final ColorRepository colorRepository;
     private final ImageRepository imageRepository;
     private final AttributeRepository attributeRepository;
-    private final CloudinaryService cloudinaryService;
     private final ObjectMapper objectMapper;
     private final ProductPromotionRepository productPromotionRepository;
 
@@ -34,7 +33,7 @@ public class ProductService {
         Image image = imageRepository.save(Image.builder().imageJson(productDto.getImage()).build());
         Attribute attribute = attributeRepository.save(Attribute.builder().attributeJson(productDto.getAttribute()).build());
         Product product = Product.builder()
-                .id("SP-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
+                .id(productDto.getProductId())
                 .category(Category.builder().id(productDto.getCategory()).build())
                 .name(productDto.getName())
                 .thumbnail(productDto.getThumbnail())

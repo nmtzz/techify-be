@@ -20,7 +20,7 @@ public class ConfigExceptionHandler {
     }
     @ExceptionHandler(value = ExpiredJwtException.class)
     ResponseEntity<String> handleExpiredJwtException(ExpiredJwtException e) {
-        return ResponseEntity.badRequest().body("Có lỗi xảy ra, hãy thử lại");
+        return ResponseEntity.badRequest().body("Expired JWT token");
     }
 
 }
