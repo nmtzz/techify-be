@@ -8,10 +8,8 @@ CREATE TABLE account (
     password_hash NVARCHAR(255),
     role NVARCHAR(20) NOT NULL,
     refresh_token NVARCHAR(255),
-    last_login DATETIME2,
     google_id NVARCHAR(50),
     facebook_id NVARCHAR(50),
-    status BIT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE customer
