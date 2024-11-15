@@ -10,9 +10,7 @@ import java.math.BigDecimal;
 @Data
 public class ProductDto {
 
-    @Size(max = 20, message = "Ma san pham phai nho hon 20 ky tu")
-    @NotBlank(message = "Ma san pham khong duoc de trong")
-    private String id;
+
     @NotNull(message = "Khong duoc de trong danh muc san pham")
     private Integer category;
     @Size(max = 50)

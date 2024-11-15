@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class ProductService {
         Image image = imageRepository.save(Image.builder().imageJson(productDto.getImage()).build());
         Attribute attribute = attributeRepository.save(Attribute.builder().attributeJson(productDto.getAttribute()).build());
         Product product = Product.builder()
-                .id(productDto.getId())
+                .id("SP-" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")))
                 .category(Category.builder().id(productDto.getCategory()).build())
                 .name(productDto.getName())
                 .thumbnail(productDto.getThumbnail())
