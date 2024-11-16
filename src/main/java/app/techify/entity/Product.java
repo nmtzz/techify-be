@@ -1,5 +1,6 @@
 package app.techify.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -13,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Setter
 @Entity
 @Table(name = "product")

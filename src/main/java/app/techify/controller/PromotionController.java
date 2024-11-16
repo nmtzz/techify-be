@@ -70,4 +70,16 @@ public class PromotionController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @PostMapping("/{promotionId}/products")
+    public ResponseEntity<Void> addProductsToPromotion(
+        @PathVariable("promotionId") Integer promotionId,
+        @RequestBody List<String> productIds) {
+        try {
+            promotionService.addProductsToPromotion(promotionId, productIds);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
 }
