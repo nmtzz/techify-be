@@ -52,12 +52,10 @@ public class Order {
     @Column(name = "status", columnDefinition = "tinyint not null")
     private Short status;
 
-    @NotNull
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at")
     private Instant createdAt;
 
-    @NotNull
-    @Column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at")
     private Instant updatedAt;
 
 }

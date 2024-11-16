@@ -41,20 +41,20 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 // Public endpoints
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/product/search/**", "/api/product/{id}").permitAll()
+//                .requestMatchers("/api/auth/**").permitAll()
+//                .requestMatchers("/api/product/search/**", "/api/product/{id}").permitAll()
                 
                 // Staff endpoints
-                .requestMatchers("/api/staff/**").hasRole("ADMIN")
-                .requestMatchers("/api/product/create", "/api/product/update/**").hasAnyRole("STAFF", "ADMIN")
-                .requestMatchers("/api/order/update/**").hasAnyRole("STAFF", "ADMIN")
+//                .requestMatchers("/api/staff/**").hasRole("ADMIN")
+//                .requestMatchers("/api/product/create", "/api/product/update/**").hasAnyRole("STAFF", "ADMIN")
+//                .requestMatchers("/api/order/update/**").hasAnyRole("STAFF", "ADMIN")
                 
                 // Customer endpoints
-                .requestMatchers("/api/order/create").hasAnyRole("CUSTOMER", "ADMIN")
-                .requestMatchers("/api/review/**").hasAnyRole("CUSTOMER", "ADMIN")
+//                .requestMatchers("/api/order/create").hasAnyRole("CUSTOMER", "ADMIN")
+//                .requestMatchers("/api/review/**").hasAnyRole("CUSTOMER", "ADMIN")
                 
                 // Secured endpoints requiring authentication
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

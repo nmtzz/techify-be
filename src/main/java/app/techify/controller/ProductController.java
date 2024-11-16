@@ -6,6 +6,7 @@ import app.techify.entity.Product;
 import app.techify.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,12 +26,16 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateProduct(@PathVariable String id, @Valid @RequestBody Product product) {
+    public ResponseEntity<?> updateProduct(@PathVariable String id, @Valid @RequestBody Product product) {
         try {
             productService.updateProduct(id, product);
-            return ResponseEntity.ok("Updated");
+            return ResponseEntity.ok("Updated successfully");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body("Product not found with id: " + id);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Khong the cap nhat san pham nay");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error updating product: " + e.getMessage());
         }
     }
 
@@ -47,5 +52,15 @@ public class ProductController {
     public ResponseEntity<List<GetProductDto>> getAllProducts() {
         List<GetProductDto> products = productService.getAllProductsWithDetails();
         return ResponseEntity.ok(products);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<GetProductDto> getProductById(@PathVariable String id) {
+        try {
+            GetProductDto product = productService.getProductById(id);
+            return ResponseEntity.ok(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

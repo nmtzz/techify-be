@@ -53,7 +53,10 @@ public class ProductService {
     }
 
     public void updateProduct(String id, @Valid Product product) {
-        Product productToUpdate = productRepository.findById(id).get();
+        Product productToUpdate = productRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+
+        // Update basic fields
         productToUpdate.setCategory(product.getCategory());
         productToUpdate.setName(product.getName());
         productToUpdate.setThumbnail(product.getThumbnail());
@@ -66,6 +69,21 @@ public class ProductService {
         productToUpdate.setSellPrice(product.getSellPrice());
         productToUpdate.setTax(product.getTax());
         productToUpdate.setDescription(product.getDescription());
+
+        // Update related entities if they exist
+        if (product.getColor() != null) {
+            Color color = colorRepository.save(product.getColor());
+            productToUpdate.setColor(color);
+        }
+        if (product.getImage() != null) {
+            Image image = imageRepository.save(product.getImage());
+            productToUpdate.setImage(image);
+        }
+        if (product.getAttribute() != null) {
+            Attribute attribute = attributeRepository.save(product.getAttribute());
+            productToUpdate.setAttribute(attribute);
+        }
+
         productRepository.save(productToUpdate);
     }
 
@@ -133,5 +151,12 @@ public class ProductService {
         LocalDateTime startDate = LocalDateTime.ofInstant(promotion.getStartDate(), ZoneId.systemDefault());
         LocalDateTime endDate = LocalDateTime.ofInstant(promotion.getEndDate(), ZoneId.systemDefault());
         return now.isAfter(startDate) && now.isBefore(endDate);
+    }
+
+    public GetProductDto getProductById(String id) {
+        Product product = productRepository.findByIdWithDetails(id)
+            .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+        
+        return convertToDTO(product);
     }
 }

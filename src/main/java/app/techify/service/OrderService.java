@@ -20,6 +20,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final OrderDetailRepository orderDetailRepository;
+
     public Order createOrder(Order order) {
         String orderId = "PO_" + Instant.now().toEpochMilli();
         order.setId(orderId);
@@ -28,15 +29,31 @@ public class OrderService {
     }
 
     public Order updateOrder(Order order) {
-        order.setUpdatedAt(Instant.now());
-        return orderRepository.save(order);
-    }
-    public Order getOrderById(String id) {
-        return orderRepository.findById(id).orElseThrow();
+        Order existingOrder = orderRepository.findById(order.getId())
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        // Update only the fields that should change
+        existingOrder.setStatus(order.getStatus());
+        existingOrder.setCustomer(order.getCustomer());
+        existingOrder.setStaff(order.getStaff());
+        existingOrder.setPaymentMethod(order.getPaymentMethod());
+        existingOrder.setTransportVendor(order.getTransportVendor());
+        existingOrder.setVoucher(order.getVoucher());
+        existingOrder.setShippingAddress(order.getShippingAddress());
+        
+        // Update the updatedAt timestamp
+        existingOrder.setUpdatedAt(Instant.now());
+        
+        return orderRepository.save(existingOrder);
     }
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    public OrderResponse getOrderById(String id) {
+        Order order = orderRepository.findById(id).orElseThrow();
+        return convertToOrderResponse(order);
     }
 
     public List<OrderResponse> getAllOrdersWithDetails() {
@@ -47,11 +64,21 @@ public class OrderService {
     private OrderResponse convertToOrderResponse(Order order) {
         OrderResponse response = new OrderResponse();
         response.setId(order.getId());
+        
+        // Set IDs
+        response.setCustomerId(order.getCustomer() != null ? order.getCustomer().getId() : null);
+        response.setStaffId(order.getStaff() != null ? order.getStaff().getId() : null);
+        response.setPaymentMethodId(order.getPaymentMethod() != null ? order.getPaymentMethod().getName() : null);
+        response.setTransportVendorId(order.getTransportVendor() != null ? order.getTransportVendor().getId() : null);
+        response.setVoucherId(order.getVoucher() != null ? order.getVoucher().getId() : null);
+        
+        // Set names
         response.setCustomerName(order.getCustomer() != null ? order.getCustomer().getFullName() : null);
         response.setStaffName(order.getStaff() != null ? order.getStaff().getFullName() : null);
         response.setPaymentMethodName(order.getPaymentMethod() != null ? order.getPaymentMethod().getName() : null);
         response.setTransportVendorName(order.getTransportVendor() != null ? order.getTransportVendor().getName() : null);
         response.setVoucherCode(order.getVoucher() != null ? order.getVoucher().getId() : null);
+        
         response.setShippingAddress(order.getShippingAddress());
         response.setStatus(order.getStatus());
         
@@ -65,7 +92,7 @@ public class OrderService {
         response.setTotal(total);
         
         if (order.getVoucher() != null) {
-            String discountValue = calculateDiscountValue(order.getVoucher(), total);
+            BigDecimal discountValue = calculateDiscountValue(order.getVoucher(), total);
             response.setDisCountValue(discountValue);
         }
         
@@ -78,9 +105,9 @@ public class OrderService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    private String calculateDiscountValue(Voucher voucher, BigDecimal total) {
+    private BigDecimal calculateDiscountValue(Voucher voucher, BigDecimal total) {
         if (total.compareTo(voucher.getMinOrder()) < 0) {
-            return "0";
+            return BigDecimal.ZERO;
         }
         
         BigDecimal discountAmount;
@@ -95,6 +122,17 @@ public class OrderService {
             discountAmount = BigDecimal.valueOf(voucher.getDiscountValue());
         }
         
-        return discountAmount.toString();
+        return discountAmount;
+    }
+
+    public OrderResponse updateOrderStatus(String id, Short status) {
+        Order existingOrder = orderRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+        
+        existingOrder.setStatus(status);
+        existingOrder.setUpdatedAt(Instant.now());
+        
+        Order updatedOrder = orderRepository.save(existingOrder);
+        return convertToOrderResponse(updatedOrder);
     }
 }

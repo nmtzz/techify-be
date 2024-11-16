@@ -25,7 +25,7 @@ public class OrderDetailController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/order/{orderId}")
+    @GetMapping("/{orderId}")
     public ResponseEntity<List<OrderDetailResponse>> getOrderDetailsByOrderId(@PathVariable String orderId) {
         List<OrderDetailResponse> orderDetails = orderDetailService.getOrderDetailsByOrderId(orderId);
         return ResponseEntity.ok(orderDetails);

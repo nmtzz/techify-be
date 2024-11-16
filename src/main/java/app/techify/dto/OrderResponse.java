@@ -6,6 +6,11 @@ import java.math.BigDecimal;
 @Data
 public class OrderResponse {
     private String id;
+    private String customerId;
+    private String staffId;
+    private String paymentMethodId;
+    private String transportVendorId;
+    private String voucherId;
     private String customerName;
     private String staffName;
     private String paymentMethodName;
@@ -15,6 +20,6 @@ public class OrderResponse {
     private Short status;
     private String createdAt;
     private String updatedAt;
-    private String disCountValue;
+    private BigDecimal disCountValue;
     private BigDecimal total;
 }
