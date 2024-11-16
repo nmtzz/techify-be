@@ -18,8 +18,8 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/create")
-    public ResponseEntity<String> createProduct(@Valid @RequestBody ProductDto productDto) {
+    @PostMapping("")
+    public ResponseEntity<String> createProduct(@Valid @ModelAttribute ProductDto productDto) {
         productService.createProduct(productDto);
         return ResponseEntity.ok("Created");
     }
@@ -43,7 +43,7 @@ public class ProductController {
             return ResponseEntity.badRequest().body("Khong the xoa san pham nay");
         }
     }
-    @GetMapping
+    @GetMapping("")
     public ResponseEntity<List<GetProductDto>> getAllProducts() {
         List<GetProductDto> products = productService.getAllProductsWithDetails();
         return ResponseEntity.ok(products);

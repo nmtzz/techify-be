@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,9 +28,9 @@ public class ProductService {
     private final ProductPromotionRepository productPromotionRepository;
 
     public void createProduct(ProductDto productDto) {
-        Color color = colorRepository.save(Color.builder().colorJson(productDto.getColor()).build());
-        Image image = imageRepository.save(Image.builder().imageJson(productDto.getImage()).build());
-        Attribute attribute = attributeRepository.save(Attribute.builder().attributeJson(productDto.getAttribute()).build());
+        Color color = colorRepository.save(Color.builder().colorJson(productDto.getColors()).build());
+        Image image = imageRepository.save(Image.builder().imageJson(productDto.getImages()).build());
+        Attribute attribute = attributeRepository.save(Attribute.builder().attributeJson(productDto.getAttributes()).build());
         Product product = Product.builder()
                 .id(productDto.getProductId())
                 .category(Category.builder().id(productDto.getCategory()).build())
@@ -84,37 +83,17 @@ public class ProductService {
         dto.setId(product.getId());
         dto.setName(product.getName());
         dto.setThumbnail(product.getThumbnail());
+        dto.setCategory(product.getCategory().getName());
         dto.setBrand(product.getBrand());
         dto.setOrigin(product.getOrigin());
         dto.setUnit(product.getUnit());
         dto.setSellPrice(product.getSellPrice());
-
-        // Parse color JSON
-        if (product.getColor() != null && product.getColor().getColorJson() != null) {
-            try {
-                dto.setColors(objectMapper.readValue(product.getColor().getColorJson(), List.class));
-            } catch (JsonProcessingException e) {
-                // Handle exception
-            }
-        }
-
-        // Parse image JSON
-        if (product.getImage() != null && product.getImage().getImageJson() != null) {
-            try {
-                dto.setImages(objectMapper.readValue(product.getImage().getImageJson(), List.class));
-            } catch (JsonProcessingException e) {
-                // Handle exception
-            }
-        }
-
-        // Parse attribute JSON
-        if (product.getAttribute() != null && product.getAttribute().getAttributeJson() != null) {
-            try {
-                dto.setAttributes(objectMapper.readValue(product.getAttribute().getAttributeJson(), Map.class));
-            } catch (JsonProcessingException e) {
-                // Handle exception
-            }
-        }
+        dto.setColors(product.getColor().getColorJson());
+        dto.setDescription(product.getDescription());
+        dto.setSerial(product.getSerial());
+        dto.setWarranty(product.getWarranty());
+        dto.setImages(product.getImage().getImageJson());
+        dto.setAttributes(product.getAttribute().getAttributeJson());
 
         // Calculate promotion price
         BigDecimal promotionPrice = calculatePromotionPrice(product.getId(), product.getSellPrice());

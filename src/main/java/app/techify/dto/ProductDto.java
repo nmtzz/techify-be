@@ -38,7 +38,7 @@ public class ProductDto {
     private Double tax;
     @Size(min = 3, max = 255, message = "Ten phai trong khoang tu 3 den 255 ky tu")
     private String description;
-    private String color;
-    private String image;
-    private String attribute;
+    private String colors;
+    private String images;
+    private String attributes;
 }
