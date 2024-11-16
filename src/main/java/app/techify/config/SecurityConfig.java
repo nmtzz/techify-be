@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,11 +20,11 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final CustomUserDetailsService customUserDetailsService;
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
@@ -39,9 +40,21 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("api/auth/protected","api/product/create").permitAll()
+                // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
-                .anyRequest().permitAll()
+                .requestMatchers("/api/product/search/**", "/api/product/{id}").permitAll()
+                
+                // Staff endpoints
+                .requestMatchers("/api/staff/**").hasRole("ADMIN")
+                .requestMatchers("/api/product/create", "/api/product/update/**").hasAnyRole("STAFF", "ADMIN")
+                .requestMatchers("/api/order/update/**").hasAnyRole("STAFF", "ADMIN")
+                
+                // Customer endpoints
+                .requestMatchers("/api/order/create").hasAnyRole("CUSTOMER", "ADMIN")
+                .requestMatchers("/api/review/**").hasAnyRole("CUSTOMER", "ADMIN")
+                
+                // Secured endpoints requiring authentication
+                .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

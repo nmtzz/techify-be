@@ -3,6 +3,7 @@ package app.techify.service;
 import app.techify.entity.Account;
 import app.techify.repository.AccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,5 +26,4 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .roles(account.getRole())
                 .build();
     }
-
 }
