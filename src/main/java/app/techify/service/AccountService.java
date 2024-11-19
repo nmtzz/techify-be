@@ -2,7 +2,9 @@ package app.techify.service;
 
 import app.techify.dto.UserResponse;
 import app.techify.entity.Account;
+import app.techify.entity.Customer;
 import app.techify.repository.AccountRepository;
+import app.techify.repository.CustomerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class AccountService {
     private final AccountRepository accountRepository;
+    private final CustomerRepository customerRepository;
     private final PasswordEncoder passwordEncoder;
     public Account createAccount(Account account) {
         if (account.getPasswordHash() != null) {
@@ -32,11 +35,20 @@ public class AccountService {
         }
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         String username = userDetails.getUsername();
-        String role = userDetails.getAuthorities().toString();
+        Account account = accountRepository.findByEmail(username).orElseThrow();
+        Customer customer = customerRepository.findCustomerByAccount(account);
 
         return UserResponse.builder()
-                .fullName(username)
-                .role(role)
+                .fullName(customer.getFullName())
+                .role(account.getRole())
+                .province(customer.getProvince())
+                .district(customer.getDistrict())
+                .ward(customer.getWard())
+                .address(customer.getAddress())
+                .altAddress(customer.getAltAddress())
+                .phone(customer.getPhone())
+                .altPhone(customer.getAltPhone())
+                .email(username)
                 .build();
     }
 }

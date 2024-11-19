@@ -41,4 +41,35 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     @Query("SELECT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.color LEFT JOIN FETCH p.image LEFT JOIN FETCH p.attribute WHERE p.category.id = :categoryId AND p.brand IN :brands")
     Page<Product> findByCategoryIdAndBrandsWithDetails(@Param("categoryId") Integer categoryId, @Param("brands") List<String> brands, Pageable pageable);
+
+    @Query("SELECT p FROM Product p " +
+           "LEFT JOIN FETCH p.color " +
+           "LEFT JOIN FETCH p.image " +
+           "LEFT JOIN FETCH p.attribute " +
+           "WHERE p.category.id = :categoryId " +
+           "AND (:brands IS NULL OR p.brand IN :brands) " +
+           "AND (:attributeFilters IS NULL OR p.attribute.attributeJson LIKE :attributeFilters)")
+    Page<Product> findByCategoryIdAndFiltersWithDetails(
+        @Param("categoryId") Integer categoryId,
+        @Param("brands") List<String> brands,
+        @Param("attributeFilters") String attributeFilters,
+        Pageable pageable
+    );
+
+    @Query("SELECT p FROM Product p " +
+           "LEFT JOIN FETCH p.color " +
+           "LEFT JOIN FETCH p.image " +
+           "LEFT JOIN FETCH p.attribute " +
+           "WHERE p.category.id = :categoryId")
+    List<Product> findAllByCategoryIdWithDetails(@Param("categoryId") Integer categoryId);
+
+    @Query("SELECT p FROM Product p " +
+           "LEFT JOIN FETCH p.color " +
+           "LEFT JOIN FETCH p.image " +
+           "LEFT JOIN FETCH p.attribute " +
+           "WHERE p.category.id = :categoryId AND p.brand IN :brands")
+    List<Product> findAllByCategoryIdAndBrandsWithDetails(
+        @Param("categoryId") Integer categoryId,
+        @Param("brands") List<String> brands
+    );
 }

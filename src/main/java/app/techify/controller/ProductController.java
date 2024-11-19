@@ -70,12 +70,14 @@ public class ProductController {
     public ResponseEntity<Page<GetProductDto>> getProductsByCategory(
         @PathVariable Integer categoryId,
         @RequestParam(defaultValue = "1") int page,
-        @RequestParam(defaultValue = "10") int size,
-        @RequestParam(required = false) String brands
+        @RequestParam(defaultValue = "4") int size,
+        @RequestParam(required = false) String brands,
+        @RequestParam(required = false) String attributes
     ) {
         try {
             List<String> brandList = brands != null ? Arrays.asList(brands.split(",")) : null;
-            Page<GetProductDto> products = productService.getProductsByCategory(categoryId, page - 1, size, brandList);
+            List<String> attributeList = attributes != null ? Arrays.asList(attributes.split(",")) : null;
+            Page<GetProductDto> products = productService.getProductsByCategory(categoryId, page, size, brandList, attributeList);
             return ResponseEntity.ok(products);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
@@ -96,5 +98,15 @@ public class ProductController {
     public ResponseEntity<List<String>> getBrandsByCategory(@PathVariable Long categoryId) {
         List<String> brands = productService.getBrandsByCategory(categoryId);
         return ResponseEntity.ok(brands);
+    }
+
+    @GetMapping("/category/{categoryId}/all")
+    public ResponseEntity<List<GetProductDto>> getAllProductsByCategory(@PathVariable Integer categoryId) {
+        try {
+            List<GetProductDto> products = productService.getAllProductsByCategory(categoryId);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

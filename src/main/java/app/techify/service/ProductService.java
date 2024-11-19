@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -190,17 +191,21 @@ public class ProductService {
         return convertToDTO(product);
     }
 
-    public Page<GetProductDto> getProductsByCategory(Integer categoryId, int page, int size, List<String> brands) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Product> products;
-        
+    public Page<GetProductDto> getProductsByCategory(Integer categoryId, int page, int size, List<String> brands, List<String> attributes) {
+        List<Product> products = productRepository.findAllByCategoryIdWithDetails(categoryId);
         if (brands != null && !brands.isEmpty()) {
-            products = productRepository.findByCategoryIdAndBrandsWithDetails(categoryId, brands, pageable);
-        } else {
-            products = productRepository.findByCategoryIdWithDetails(categoryId, pageable);
+            products = products.stream()
+                .filter(product -> brands.contains(product.getBrand()))
+                .toList();
         }
-        
-        return products.map(this::convertToDTO);
+        if (attributes != null && !attributes.isEmpty()) {
+            products = products.stream()
+                .filter(product -> attributes.contains(product.getAttribute().getAttributeJson()))
+                .toList();
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productsPage = new PageImpl<>(products, pageable, products.size());
+        return productsPage.map(this::convertToDTO);
     }
 
     public List<GetProductDto> getProductsOnSale() {
@@ -237,5 +242,26 @@ public class ProductService {
 
     public List<String> getBrandsByCategory(Long categoryId) {
         return productRepository.findDistinctBrandsByCategory_Id(categoryId);
+    }
+
+    public List<GetProductDto> getAllProductsByCategory(Integer categoryId, List<String> brands) {
+        List<Product> products = productRepository.findAllByCategoryIdWithDetails(categoryId);
+        if (brands != null && !brands.isEmpty()) {
+            for (String brand : brands) {
+                products = products.stream()
+                    .filter(product -> product.getBrand().equals(brand))
+                    .toList();
+            }
+        }
+        return products.stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<GetProductDto> getAllProductsByCategory(Integer categoryId) {
+        List<Product> products = productRepository.findAllByCategoryIdWithDetails(categoryId);
+        return products.stream()
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
     }
 }
