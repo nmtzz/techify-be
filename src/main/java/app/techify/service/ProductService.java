@@ -8,13 +8,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,6 +53,7 @@ public class ProductService {
                 .color(color)
                 .image(image)
                 .attribute(attribute)
+                .createdAt(Instant.now())
                 .build();
         productRepository.save(product);
     }
@@ -112,10 +118,34 @@ public class ProductService {
         dto.setWarranty(product.getWarranty());
         dto.setImages(product.getImage().getImageJson());
         dto.setAttributes(product.getAttribute().getAttributeJson());
+        dto.setCreatedAt(product.getCreatedAt());
+        // Calculate average rating with specific rounding logic
+        Set<Review> reviews = product.getReviews();
+        if (reviews != null && !reviews.isEmpty()) {
+            double avgRating = reviews.stream()
+                .mapToInt(review -> review.getRating().intValue())
+                .average()
+                .orElse(0.0);
+            
+            // Custom rounding logic:
+            // If decimal part <= 0.5, round down
+            // If decimal part > 0.5, round up
+            double decimal = avgRating - Math.floor(avgRating);
+            if (decimal <= 0.5) {
+                dto.setAvgRating((int) Math.floor(avgRating));
+            } else {
+                dto.setAvgRating((int) Math.ceil(avgRating));
+            }
+        } else {
+            dto.setAvgRating(0);
+        }
 
         // Calculate promotion price
         BigDecimal promotionPrice = calculatePromotionPrice(product.getId(), product.getSellPrice());
         dto.setPromotionPrice(promotionPrice);
+        if (promotionPrice.compareTo(product.getSellPrice()) < 0) {
+            dto.setPromotionEndDate(getEarliestPromotionEndDate(product.getId()));
+        }
 
         return dto;
     }
@@ -158,5 +188,54 @@ public class ProductService {
             .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
         
         return convertToDTO(product);
+    }
+
+    public Page<GetProductDto> getProductsByCategory(Integer categoryId, int page, int size, List<String> brands) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> products;
+        
+        if (brands != null && !brands.isEmpty()) {
+            products = productRepository.findByCategoryIdAndBrandsWithDetails(categoryId, brands, pageable);
+        } else {
+            products = productRepository.findByCategoryIdWithDetails(categoryId, pageable);
+        }
+        
+        return products.map(this::convertToDTO);
+    }
+
+    public List<GetProductDto> getProductsOnSale() {
+        List<Product> allProducts = productRepository.findAllWithDetails();
+        
+        return allProducts.stream()
+            .filter(product -> {
+                List<ProductPromotion> promotions = productPromotionRepository.findByProductIdWithPromotion(product.getId());
+                return promotions.stream()
+                    .anyMatch(pp -> isPromotionActive(pp.getPromotion()));
+            })
+            .map(this::convertToDTO)
+            .limit(8)
+            .collect(Collectors.toList());
+    }
+
+    public Instant getEarliestPromotionEndDate(String productId) {
+        List<ProductPromotion> promotions = productPromotionRepository.findByProductIdWithPromotion(productId);
+        return promotions.stream()
+            .filter(pp -> isPromotionActive(pp.getPromotion()))
+            .map(pp -> pp.getPromotion().getEndDate())
+            .min(Instant::compareTo)
+            .orElse(null);
+    }
+
+    public List<GetProductDto> getNewestProducts() {
+        List<Product> products = productRepository.findAllWithDetails();
+        return products.stream()
+            .sorted((p1, p2) -> p2.getCreatedAt().compareTo(p1.getCreatedAt())) // Sort by creation date, newest first
+            .limit(4) // Get only 4 products
+            .map(this::convertToDTO)
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getBrandsByCategory(Long categoryId) {
+        return productRepository.findDistinctBrandsByCategory_Id(categoryId);
     }
 }

@@ -36,7 +36,6 @@ public class ProductDto {
     private BigDecimal sellPrice;
     @NotNull(message = "Thue khong duoc de trong")
     private Double tax;
-    @Size(min = 3, max = 255, message = "Ten phai trong khoang tu 3 den 255 ky tu")
     private String description;
     private String colors;
     private String images;

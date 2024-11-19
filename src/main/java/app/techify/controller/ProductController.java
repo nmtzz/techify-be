@@ -6,10 +6,12 @@ import app.techify.entity.Product;
 import app.techify.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -62,5 +64,37 @@ public class ProductController {
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<Page<GetProductDto>> getProductsByCategory(
+        @PathVariable Integer categoryId,
+        @RequestParam(defaultValue = "1") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(required = false) String brands
+    ) {
+        try {
+            List<String> brandList = brands != null ? Arrays.asList(brands.split(",")) : null;
+            Page<GetProductDto> products = productService.getProductsByCategory(categoryId, page - 1, size, brandList);
+            return ResponseEntity.ok(products);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @GetMapping("/on-sale")
+    public ResponseEntity<List<GetProductDto>> getProductsOnSale() {
+        return ResponseEntity.ok(productService.getProductsOnSale());
+    }
+
+    @GetMapping("/newest")
+    public ResponseEntity<List<GetProductDto>> getNewestProducts() {
+        return ResponseEntity.ok(productService.getNewestProducts());
+    }
+
+    @GetMapping("/brands/{categoryId}")
+    public ResponseEntity<List<String>> getBrandsByCategory(@PathVariable Long categoryId) {
+        List<String> brands = productService.getBrandsByCategory(categoryId);
+        return ResponseEntity.ok(brands);
     }
 }

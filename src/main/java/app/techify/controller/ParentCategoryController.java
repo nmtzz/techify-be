@@ -3,6 +3,7 @@ package app.techify.controller;
 import app.techify.dto.ParentCategoryDto;
 import app.techify.entity.ParentCategory;
 import app.techify.service.ParentCategoryService;
+import app.techify.dto.CategoryResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -37,5 +38,10 @@ public class ParentCategoryController {
     public ResponseEntity<String> deleteParentCategory(@PathVariable Integer id) {
         parentCategoryService.deleteParentCategory(id);
         return ResponseEntity.ok("Deleted");
+    }
+
+    @GetMapping("/with-children")
+    public ResponseEntity<List<CategoryResponse>> getParentCategoriesWithChildren() {
+        return ResponseEntity.ok(parentCategoryService.getParentCategoriesWithChildren());
     }
 }

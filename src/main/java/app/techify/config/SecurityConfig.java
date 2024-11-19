@@ -1,6 +1,6 @@
 package app.techify.config;
 
-import app.techify.security.JwtAuthenticationFilter;
+import app.techify.filter.JwtAuthenticationFilter;
 import app.techify.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;

@@ -7,6 +7,7 @@ import lombok.*;
 import org.hibernate.annotations.Nationalized;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -84,6 +85,8 @@ public class Product {
     @JoinColumn(name = "attribute_id")
     private Attribute attribute;
 
+    @Column(name = "created_at", columnDefinition = "DATETIME2 DEFAULT GETDATE()")
+    private Instant createdAt;
 
     @OneToMany(mappedBy = "product")
     private Set<OrderDetail> orderDetails = new LinkedHashSet<>();

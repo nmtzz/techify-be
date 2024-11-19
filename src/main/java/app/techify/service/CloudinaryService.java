@@ -17,10 +17,10 @@ public class CloudinaryService {
         Cloudinary cloudinary = new Cloudinary("cloudinary://388249677938798:WUxnO7kxyRCUVW_SBzEnxxhn_ho@daft8gwa9");
         Transformation transformation = new Transformation();
         transformation
-                .width(800)
-                .height(500)
+                .width(900)
+                .height(800)
                 .crop("fill")
-                .gravity("center")
+                .gravity("auto")
                 .fetchFormat("webp")
                 .quality("auto");
         Map uploadParams = ObjectUtils.asMap("transformation", transformation);
